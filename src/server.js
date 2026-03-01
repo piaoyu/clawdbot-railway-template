@@ -182,7 +182,7 @@ async function startGateway() {
     "gateway",
     "run",
     "--bind",
-    "lan",
+    "loopback",
     "--port",
     String(INTERNAL_GATEWAY_PORT),
     "--auth",
@@ -387,9 +387,9 @@ app.get("/setup", requireSetupAuth, (_req, res) => {
     <div id="status">Loading...</div>
     <div id="statusDetails" class="muted" style="margin-top:0.5rem"></div>
     <div style="margin-top: 0.75rem">
-      <a href="/openclaw" target="_blank">Open OpenClaw UI</a>
+      <a href="/openclaw" target="_bloopbackk">Open OpenClaw UI</a>
       &nbsp;|&nbsp;
-      <a href="/setup/export" target="_blank">Download backup (.tar.gz)</a>
+      <a href="/setup/export" target="_bloopbackk">Download backup (.tar.gz)</a>
     </div>
 
     <div style="margin-top: 0.75rem">
@@ -502,7 +502,7 @@ app.get("/setup", requireSetupAuth, (_req, res) => {
       <option value="openai-responses">openai-responses</option>
     </select>
 
-    <label>API key env var name (optional, e.g. OLLAMA_API_KEY). Leave blank for no key.</label>
+    <label>API key env var name (optional, e.g. OLLAMA_API_KEY). Leave bloopbackk for no key.</label>
     <input id="customProviderApiKeyEnv" placeholder="OLLAMA_API_KEY" />
 
     <label>Optional model id to register (e.g. llama3.1:8b)</label>
@@ -607,7 +607,7 @@ function buildOnboardArgs(payload) {
     WORKSPACE_DIR,
     // The wrapper owns public networking; keep the gateway internal.
     "--gateway-bind",
-    "lan",
+    "loopback",
     "--gateway-port",
     String(INTERNAL_GATEWAY_PORT),
     "--gateway-auth",
@@ -739,16 +739,16 @@ app.post("/setup/api/run", requireSetupAuth, async (req, res) => {
   // Optional setup (only after successful onboarding).
   if (ok) {
     // Ensure gateway token is written into config so the browser UI can authenticate reliably.
-    // (We also enforce lan bind since the wrapper proxies externally.)
+    // (We also enforce loopback bind since the wrapper proxies externally.)
     // IMPORTANT: Set both gateway.auth.token (server-side) and gateway.remote.token (client-side)
     // to the same value so the Control UI can connect without "token mismatch" errors.
     await runCmd(OPENCLAW_NODE, clawArgs(["config", "set", "gateway.auth.mode", "token"]));
     await runCmd(OPENCLAW_NODE, clawArgs(["config", "set", "gateway.auth.token", OPENCLAW_GATEWAY_TOKEN]));
     await runCmd(OPENCLAW_NODE, clawArgs(["config", "set", "gateway.remote.token", OPENCLAW_GATEWAY_TOKEN]));
-    await runCmd(OPENCLAW_NODE, clawArgs(["config", "set", "gateway.bind", "lan"]));
+    await runCmd(OPENCLAW_NODE, clawArgs(["config", "set", "gateway.bind", "loopback"]));
     await runCmd(OPENCLAW_NODE, clawArgs(["config", "set", "gateway.port", String(INTERNAL_GATEWAY_PORT)]));
 
-    // Railway runs behind a reverse proxy. Trust lan as a proxy hop so local client detection
+    // Railway runs behind a reverse proxy. Trust loopback as a proxy hop so local client detection
     // remains correct when X-Forwarded-* headers are present.
     await runCmd(
       OPENCLAW_NODE,
